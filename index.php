@@ -1,169 +1,11 @@
 <?php    
-/*
- * PHP QR Code encoder
- *
- * Exemplatory usage
- *
- * PHP QR Code is distributed under LGPL 3
- * Copyright (C) 2010 Dominik Dzienia <deltalab at poczta dot fm>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 3 of the License, or any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- */
     
     session_start();
+    require_once __DIR__.'/PHP/includes/imports.php';
+    require_once __DIR__.'/PHP/includes/functions.php';
+    require_once __DIR__.'/PHP/includes/configs.php';
+    require_once __DIR__.'/PHP/includes/generatevCard.php';
     
-    //echo "<h1>PHP QR Code</h1><hr/>";
-    
-    //set it to writable location, a place for temp generated PNG files
-    $PNG_TEMP_DIR = dirname(__FILE__).DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR;
-    
-    //html PNG location prefix
-    $File_WEB_DIR = 'temp/';
-    require __DIR__ . './vendor/autoload.php';
-
-    use Endroid\QrCode\QrCode;
-    use Endroid\QrCode\Writer\PngWriter;
-    use Endroid\QrCode\Writer\SvgWriter;
-    use Endroid\QrCode\Writer\EpsWriter;
-    use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelLow;
-    use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelMedium;
-    use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelQuartile;
-    use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
-
-
-    // Fonction pour nettoyer les entrées
-    function cleanInput($data) {
-        return str_replace(';', '', $data);
-    }
-    // Configuration et initialisation
-    if (!file_exists($PNG_TEMP_DIR)) mkdir($PNG_TEMP_DIR);
-
-    // Traitement du formulaire
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        // Nettoyer les entrées
-        $_POST['firstname'] = cleanInput($_POST['firstname']);
-        $_POST['lastname'] = cleanInput($_POST['lastname']);
-        $_POST['title'] = cleanInput($_POST['title']);
-        $_POST['organization'] = cleanInput($_POST['organization']);
-        $_POST['address'] = cleanInput($_POST['address']);
-        $_POST['email'] = cleanInput($_POST['email']);
-        $_POST['url'] = cleanInput($_POST['url']);
-        $_POST['mobile'] = cleanInput($_POST['mobile']);
-
-        // Stocker les données dans la session
-        $_SESSION['firstname'] = $_POST['firstname'];
-        $_SESSION['lastname'] = $_POST['lastname'];
-        
-        $errorCorrectionLevel = 'L';
-        if (isset($_REQUEST['level']) && in_array($_REQUEST['level'], array('L','M','Q','H')))
-            $errorCorrectionLevel = $_REQUEST['level'];    
-
-        $matrixPointSize = 4;
-        if (isset($_REQUEST['size']))
-            $matrixPointSize = min(max((int)$_REQUEST['size'], 1), 10);
-
-        // user data
-        $phone = $_POST['country_code'] . $_POST['mobile'];
-        
-        // Construction optimisée du vCard
-        $content = "BEGIN:VCARD\nVERSION:2.1\n";
-        $content .= "N:".$_POST['lastname'].";".$_POST['firstname']."\n";
-        $content .= "FN:".$_POST['lastname']." ".$_POST['firstname']."\n";
-        
-        // Ajout conditionnel des champs non-obligatoires
-        if (!empty($_POST['organization'])) {
-            $content .= "ORG:".$_POST['organization']."\n";
-        }
-        if (!empty($_POST['title'])) {
-            $content .= "TITLE:".$_POST['title']."\n";
-        }
-        if (!empty($_POST['mobile'])) {
-            $content .= "TEL;TYPE=cell:".$_POST['country_code'].$_POST['mobile']."\n";
-        }
-        if (!empty($_POST['address'])) {
-            $content .= "ADR;HOME:;;".$_POST['address']."\n";
-        }
-        if (!empty($_POST['email'])) {
-            $content .= "EMAIL:".strtolower($_POST['email'])."\n";
-        }
-        if (!empty($_POST['url'])) {
-            $content .= "URL:".$_POST['url']."\n";
-        }
-        
-        $content .= "END:VCARD";
-
-        $format = isset($_REQUEST['format']) ? strtolower($_REQUEST['format']) : 'png';
-        $filename = $PNG_TEMP_DIR.'vcard_'.time().'.'.$format;
-        
-        // Configuration du QR Code
-        $qrCode = new QrCode($content);
-        
-        // Définir le niveau de correction
-        switch($errorCorrectionLevel) {
-            case 'L': 
-                $qrCode->setErrorCorrectionLevel(new ErrorCorrectionLevelLow()); 
-                break;
-            case 'M': 
-                $qrCode->setErrorCorrectionLevel(new ErrorCorrectionLevelMedium()); 
-                break;
-            case 'Q': 
-                $qrCode->setErrorCorrectionLevel(new ErrorCorrectionLevelQuartile()); 
-                break;
-            case 'H': 
-                $qrCode->setErrorCorrectionLevel(new ErrorCorrectionLevelHigh()); 
-                break;
-        }
-
-        // Définir la taille
-        $qrCode->setSize($matrixPointSize * 50); // Multiplié par 50 pour une meilleure visibilité
-
-        // Générer le QR code selon le format choisi
-        switch($format) {
-            case 'svg':
-                $writer = new SvgWriter();
-                $filename = $PNG_TEMP_DIR.'vcard_'.time().'.svg';
-                break;
-            case 'eps':
-                $writer = new EpsWriter();
-                $filename = $PNG_TEMP_DIR.'vcard_'.time().'.eps';
-                break;
-            default:
-                $writer = new PngWriter();
-                $filename = $PNG_TEMP_DIR.'vcard_'.time().'.png';
-        }
-
-        // Générer et sauvegarder le fichier
-        $result = $writer->write($qrCode);
-        $result->saveToFile($filename);
-    }
-
-    // Liste de 20 belles couleurs
-    $colors = [
-        '#4A148C', '#1A237E', '#0D47A1', '#01579B', '#006064',
-        '#004D40', '#1B5E20', '#33691E', '#827717', '#E65100',
-        '#BF360C', '#3E2723', '#263238', '#4527A0', '#283593',
-        '#1565C0', '#0277BD', '#00838F', '#00695C', '#2E7D32'
-    ];
-
-    // Choisir deux couleurs aléatoires
-    $color1 = $colors[array_rand($colors)];
-    $color2 = $colors[array_rand($colors)];
-    // S'assurer que les deux couleurs sont différentes
-    while ($color1 === $color2) {
-        $color2 = $colors[array_rand($colors)];
-    }
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -177,7 +19,7 @@
     <link rel="shortcut icon" href="https://placehold.co/96x96/FFFFFF/<?php echo str_replace('#','',$color1); ?>?text=QR"/png" type="image/x-icon">
     <style>
         body {
-            background: linear-gradient(45deg, <?php echo $color1; ?>, <?php echo $color2; ?>);
+            background: linear-gradient(<?php echo mt_rand(0,360); ?>deg, <?php echo $color1; ?>, <?php echo $color2; ?>);
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -297,7 +139,7 @@
         }
 
         .select2-container--default .select2-results__option[aria-selected="true"] {
-            background-color: #28a745 !important; /* Couleur de fond sélectionnée */
+            background: linear-gradient(<?php echo mt_rand(0,360); ?>deg, <?php echo $color1; ?>, <?php echo $color2; ?>) !important; /* Couleur de fond sélectionnée */
             color: #fff !important; /* Couleur du texte sélectionné */
         }
     </style>
@@ -617,7 +459,7 @@
                 <?php if(isset($filename) && file_exists($filename)): ?>
                     <div class="qr-preview">
                         <h4 class="mb-3">Votre QR Code</h4>
-                        <img src="<?php echo $File_WEB_DIR.basename($filename); ?>" class="img-fluid" alt="QR Code généré">
+                        <img src="<?php echo $File_WEB_DIR.basename($filename); ?>" class="img-fluid rounded" alt="QR Code généré">
                         <div class="mt-3">
                             <a href="download.php?file=<?php echo basename($filename); ?>" class="btn btn-warning btn-lg">
                                 Télécharger le QR Code
