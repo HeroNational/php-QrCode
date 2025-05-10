@@ -69,7 +69,7 @@ qrCode-master/
 │       └── imports.php      # Import des librairies
 ├── temp/                    # QR codes générés
 ├── vendor/                  # Dépendances
-├── composer.json       
+├── composer.json     
 ├── index.php               # Point d'entrée
 └── README.md
 ```
@@ -132,6 +132,11 @@ qrCode-master/
 ## Licence
 
 Distribué sous la licence MIT. Voir `LICENSE` pour plus d'informations.
+
+## Démos
+![vCard](./images/vCard.png)
+
+![Text](./images/Text.png)
 
 ## Auteur
 
