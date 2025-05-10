@@ -553,7 +553,7 @@
                         <h4 class="mb-3">Votre QR Code</h4>
                         <img src="<?php echo isset($filenameDisplay) && file_exists($filenameDisplay)? $File_WEB_DIR.basename($filenameDisplay):"https://placehold.co/500x500/FFFFFF/".str_replace('#','',$color1)."?text=QR"; ?>" class="img-fluid rounded" alt="QR Code généré">
                         <div class="mt-3">
-                            <a href="download.php?file=<?php echo basename($filename); ?>" class="btn btn-warning btn-lg">
+                            <a href="./php/download.php?file=<?php echo basename($filename); ?>" class="btn btn-warning btn-lg">
                                 Télécharger le QR Code
                             </a>
                         </div>
