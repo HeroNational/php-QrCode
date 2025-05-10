@@ -1,9 +1,11 @@
-# Générateur de QR Code
+# Générateur de QR Code (php-QrCode)
 
 ## Description
+
 Application web permettant de générer des QR Codes au format vCard ou texte simple, avec une interface moderne et intuitive.
 
 ## Fonctionnalités
+
 - Génération de QR Codes :
   - Format vCard (carte de visite)
   - Format texte simple
@@ -15,6 +17,7 @@ Application web permettant de générer des QR Codes au format vCard ou texte si
 - Personnalisation avancée du QR Code
 
 ## Prérequis
+
 - PHP 7.4+
 - Composer
 - Serveur Web (Apache, Nginx...)
@@ -25,22 +28,26 @@ Application web permettant de générer des QR Codes au format vCard ou texte si
 ## Installation
 
 1. Cloner le dépôt :
+
 ```bash
-git clone https://github.com/votre-username/qrcode-generator.git
-cd qrcode-generator
+git clone https://github.com/HeroNational/php-QrCode
+cd php-QrCode
 ```
 
 2. Installer les dépendances :
+
 ```bash
 composer install
 ```
 
 3. Configurer les permissions du dossier temp :
+
 ```bash
 chmod 777 temp/
 ```
 
 ## Structure du Projet
+
 ```
 qrCode-master/
 ├── php/
@@ -52,7 +59,7 @@ qrCode-master/
 │       └── imports.php      # Import des librairies
 ├── temp/                    # QR codes générés
 ├── vendor/                  # Dépendances
-├── composer.json           
+├── composer.json         
 ├── index.php               # Point d'entrée
 └── README.md
 ```
@@ -60,6 +67,7 @@ qrCode-master/
 ## Utilisation
 
 ### une vCard
+
 1. Sélectionnez l'onglet "vCard"
 2. Remplissez les informations de contact
 3. Choisissez le format de sortie (PNG, SVG, EPS)
@@ -67,6 +75,7 @@ qrCode-master/
 5. Cliquez sur "Générer"
 
 ### un Texte
+
 1. Sélectionnez l'onglet "Texte"
 2. Saisissez votre texte
 3. Configurez les options de génération
@@ -75,25 +84,29 @@ qrCode-master/
 ## Options
 
 ### de Correction
+
 | Niveau | Description | Correction |
-|--------|-------------|------------|
+| ------ | ----------- | ---------- |
 | L      | Minimal     | 7%         |
 | M      | Standard    | 15%        |
-| Q      | Élevé      | 25%        |
-| H      | Maximal    | 30%        |
+| Q      | Élevé     | 25%        |
+| H      | Maximal     | 30%        |
 
 ### d'Export
+
 - **PNG** : Format bitmap standard
 - **SVG** : Format vectoriel web
 - **EPS** : Format vectoriel impression
 
 ## Sécurité
+
 - Nettoyage des entrées utilisateur
 - Protection XSS
 - Validation des formats
 - Gestion sécurisée des sessions
 
 ## Technologies
+
 - PHP 7.4+
 - Bootstrap 5
 - jQuery
@@ -101,6 +114,7 @@ qrCode-master/
 - Endroid/QR-Code
 
 ## Contribution
+
 1. Forkez le projet
 2. Créez une branche (`git checkout -b feature/AmazingFeature`)
 3. Commitez vos changements (`git commit -m 'Add AmazingFeature'`)
@@ -108,15 +122,19 @@ qrCode-master/
 5. Ouvrez une Pull Request
 
 ## Licence
+
 Distribué sous la licence MIT. Voir `LICENSE` pour plus d'informations.
 
 ## Auteur
-Votre Nom - [@votre-twitter](https://twitter.com/votre-twitter)
+
+Jacobin Daniel Fokou - [@Jacobin Daniel Fokou](https://www.linkedin.com/in/jacobindanielfokou)
 
 ## Remerciements
+
 - [Endroid/QR-Code](https://github.com/endroid/qr-code)
 - [Bootstrap](https://getbootstrap.com)
 - [Select2](https://select2.org)
 
 ---
+
 *Dernière mise à jour : Mai 2024*
