@@ -27,6 +27,14 @@ Application web permettant de générer des QR Codes au format vCard ou texte si
 
 ## Installation
 
+### Option 1 : Via Composer (recommandée)
+
+```bash
+composer require heronational/php-qrcode
+```
+
+### Option 2 : Installation manuelle
+
 1. Cloner le dépôt :
 
 ```bash
@@ -46,6 +54,8 @@ composer install
 chmod 777 temp/
 ```
 
+> **Note** : L'installation via Composer (Option 1) est recommandée car elle gère automatiquement les dépendances et les mises à jour.
+
 ## Structure du Projet
 
 ```
@@ -59,7 +69,7 @@ qrCode-master/
 │       └── imports.php      # Import des librairies
 ├── temp/                    # QR codes générés
 ├── vendor/                  # Dépendances
-├── composer.json         
+├── composer.json       
 ├── index.php               # Point d'entrée
 └── README.md
 ```
@@ -81,9 +91,7 @@ qrCode-master/
 3. Configurez les options de génération
 4. Cliquez sur "Générer"
 
-## Options
-
-### de Correction
+## Options de Correction
 
 | Niveau | Description | Correction |
 | ------ | ----------- | ---------- |
