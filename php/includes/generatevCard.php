@@ -1,6 +1,5 @@
 <?php
 
-// Correction du chemin vers l'autoloader de Composer
 require __DIR__ . '/../../vendor/autoload.php';
 
 // Importation des classes nécessaires pour la génération de QR Code
@@ -27,28 +26,28 @@ if (!file_exists($PNG_TEMP_DIR)) mkdir($PNG_TEMP_DIR);
 // Vérifie si la requête est de type POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Nettoie toutes les entrées utilisateur pour prévenir les injections XSS
-    $_POST['firstname'] = cleanInput($_POST['firstname']);
-    $_POST['lastname'] = cleanInput($_POST['lastname']);
-    $_POST['title'] = cleanInput($_POST['title']);
-    $_POST['organization'] = cleanInput($_POST['organization']);
-    $_POST['address'] = cleanInput($_POST['address']);
-    $_POST['email'] = cleanInput($_POST['email']);
-    $_POST['url'] = cleanInput($_POST['url']);
-    $_POST['mobile'] = cleanInput($_POST['mobile']);
+    $_POST['firstname'] = isset($_POST['firstname']) ? cleanInput($_POST['firstname']) : '';
+    $_POST['lastname'] = isset($_POST['lastname']) ? cleanInput($_POST['lastname']) : '';
+    $_POST['title'] = isset($_POST['title']) ? cleanInput($_POST['title']) : '';
+    $_POST['organization'] = isset($_POST['organization']) ? cleanInput($_POST['organization']) : '';
+    $_POST['address'] = isset($_POST['address']) ? cleanInput($_POST['address']) : '';
+    $_POST['email'] = isset($_POST['email']) ? cleanInput($_POST['email']) : '';
+    $_POST['url'] = isset($_POST['url']) ? cleanInput($_POST['url']) : '';
+    $_POST['mobile'] = isset($_POST['mobile']) ? cleanInput($_POST['mobile']) : '';
+    $_POST['country_code'] = isset($_POST['country_code']) ? cleanInput($_POST['country_code']) : '';
 
     // Stockage des données dans la session pour une utilisation ultérieure
     $_SESSION['firstname'] = $_POST['firstname'];
     $_SESSION['lastname'] = $_POST['lastname'];
     
-    // Configuration du niveau de correction d'erreur (L=Low, M=Medium, Q=Quartile, H=High)
-    $errorCorrectionLevel = 'L';
-    if (isset($_REQUEST['level']) && in_array($_REQUEST['level'], array('L','M','Q','H')))
-        $errorCorrectionLevel = $_REQUEST['level'];    
+    // Configuration du niveau de correction d'erreur
+    $errorCorrectionLevel = isset($_REQUEST['level']) ? $_REQUEST['level'] : 'L';
+    if (in_array($errorCorrectionLevel, array('L','M','Q','H'))) {
+        $errorCorrectionLevel = $_REQUEST['level'];
+    }
 
-    // Configuration de la taille de la matrice (entre 1 et 10)
-    $matrixPointSize = 4;
-    if (isset($_REQUEST['size']))
-        $matrixPointSize = min(max((int)$_REQUEST['size'], 1), 10);
+    // Configuration de la taille de la matrice
+    $matrixPointSize = isset($_REQUEST['size']) ? min(max((int)$_REQUEST['size'], 1), 10) : 4;
 
     // Concaténation du code pays avec le numéro de mobile
     $phone = $_POST['country_code'] . $_POST['mobile'];

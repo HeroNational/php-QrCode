@@ -1,11 +1,17 @@
 <?php    
-    
     session_start();
     require_once __DIR__.'/PHP/includes/imports.php';
     require_once __DIR__.'/PHP/includes/functions.php';
     require_once __DIR__.'/PHP/includes/configs.php';
-    require_once __DIR__.'/PHP/includes/generatevCard.php';
-    
+
+    // Déterminer le type de QR code à générer
+    $qrType = isset($_POST['qrType']) ? $_POST['qrType'] : 'vcard';
+    // Charger le fichier approprié selon le type
+    if ($qrType === 'text') {
+        require_once __DIR__.'/PHP/includes/generateText.php';
+    } else {
+        require_once __DIR__.'/PHP/includes/generatevCard.php';
+    }
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -75,7 +81,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(to right, #64b3f4, #c2e59c);
+            background: linear-gradient(<?php echo mt_rand(0,360); ?>deg, <?php echo $color1; ?>, <?php echo $color2; ?>);
             border-radius: 7px;
             border: 2px solid rgba(255, 255, 255, 0.57); /* Ajout d'une bordure transparente */
             color: #333;
@@ -142,16 +148,47 @@
             background: linear-gradient(<?php echo mt_rand(0,360); ?>deg, <?php echo $color1; ?>, <?php echo $color2; ?>) !important; /* Couleur de fond sélectionnée */
             color: #fff !important; /* Couleur du texte sélectionné */
         }
+
+        /* Styles pour les boutons de bascule */
+        .btn-group-toggle .btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .btn-group-toggle .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-group-toggle .btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body class="bg-light p-5">
     <div class="container py-5">
-        <h1 class="text-center mb-4">Générateur de QR Code Personnel</h1>
+        <h1 class="text-center mb-4">Générateur de QR Code</h1>
         
+        <div class="d-flex justify-content-center mb-4">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-light active">
+                    <input type="radio" name="qrType" id="vcard" <?php echo $qrType != 'text'?"checked":"";?>> vCard
+                </label>
+                <label class="btn btn-outline-light">
+                    <input type="radio" name="qrType" id="text"  <?php echo $qrType === 'text'?"checked":"";?>> Texte
+                </label>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-md-8">
-                <div class="form-container">
+                <!-- Formulaire vCard -->
+                <div class="form-container" id="vcardForm">
                     <form action="" method="post">
+                        <input type="hidden" name="qrType" value="vcard">
                         <div class="row">
                             <!-- Informations personnelles -->
                             <div class="col-md-6 mb-3">
@@ -449,7 +486,54 @@
                         </div>
 
                         <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">Générer le QR Code</button>
+                            <button type="submit" class="btn btn-warning btn-lg px-5">Générer le QR Code</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Formulaire Texte -->
+                <div class="form-container" id="textForm" style="display: none;">
+                    <form action="" method="post">
+                        <input type="hidden" name="qrType" value="text">
+                        <div class="mb-4">
+                            <label class="form-label">Votre texte</label>
+                            <textarea class="form-control" name="text" rows="6" placeholder="Saisissez votre texte ici..."><?php echo isset($_POST['text']) ? htmlspecialchars($_POST['text']) : ''; ?></textarea>
+                        </div>
+
+                        <!-- Paramètres QR Code -->
+                        <div class="col-md-12">
+                            <h4 class="mb-3">Paramètres du QR Code</h4>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Format de sortie</label>
+                                    <select name="format" class="form-select">
+                                        <option value="png">PNG</option>
+                                        <option value="eps">EPS</option>
+                                        <option selected value="svg">SVG</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Niveau de correction</label>
+                                    <select name="level" class="form-select">
+                                        <option value="L">L - minimal</option>
+                                        <option value="M">M - standard</option>
+                                        <option value="Q">Q - élevé</option>
+                                        <option selected value="H">H - maximal</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Taille</label>
+                                    <select name="size" class="form-select">
+                                        <?php for($i=1;$i<=10;$i++): ?>
+                                            <option <?php echo $i==5? "selected" : "";?> value="<?php echo $i ?>"><?php echo $i ?></option>
+                                        <?php endfor; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-warning btn-lg px-5">Générer le QR Code</button>
                         </div>
                     </form>
                 </div>
@@ -494,11 +578,43 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-vcard.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Initialisation de Select2 pour le pays
             $('#country-code').select2({
                 placeholder: 'Sélectionner un pays',
                 allowClear: true,
                 templateResult: formatCountry,
                 templateSelection: formatCountry
+            });
+
+            // Afficher le formulaire approprié au chargement
+            const qrType = '<?php echo $qrType; ?>';
+            if (qrType === 'text') {
+                $('#vcardForm').hide();
+                $('#textForm').show();
+                $('#text').prop('checked', true);
+                $('#text').closest('.btn').addClass('active');
+                $('#vcard').closest('.btn').removeClass('active');
+            } else {
+                $('#vcardForm').show();
+                $('#textForm').hide();
+                $('#vcard').prop('checked', true);
+                $('#vcard').closest('.btn').addClass('active');
+                $('#text').closest('.btn').removeClass('active');
+            }
+
+            // Gestion de la bascule entre les formulaires
+            $('input[name="qrType"]').on('change', function() {
+                if (this.id === 'vcard') {
+                    $('#vcardForm').show();
+                    $('#textForm').hide();
+                } else {
+                    $('#vcardForm').hide();
+                    $('#textForm').show();
+                }
+                
+                // Mettre à jour la classe active des boutons
+                $('.btn-group-toggle .btn').removeClass('active');
+                $(this).closest('.btn').addClass('active');
             });
         });
 
