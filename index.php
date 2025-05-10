@@ -174,6 +174,39 @@
             border-color: rgba(255, 255, 255, 0.4);
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
         }
+
+        /* Styles pour la scrollbar - Compatible Webkit (Chrome, Safari, Edge) */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, <?php echo $color1; ?>, <?php echo $color2; ?>);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, <?php echo $color2; ?>, <?php echo $color1; ?>);
+        }
+
+        /* Styles pour Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: <?php echo $color1; ?> rgba(255, 255, 255, 0.1);
+        }
+
+        /* Style pour la scrollbar dans les éléments avec défilement */
+        .form-container, .select2-results__options {
+            scrollbar-width: thin;
+            scrollbar-color: <?php echo $color1; ?> rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body class="bg-light p-5">
