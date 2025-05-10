@@ -1,15 +1,22 @@
 <?php    
+    // Démarrer une session PHP pour gérer les données entre les pages
     session_start();
-    require_once __DIR__.'/PHP/includes/imports.php';
-    require_once __DIR__.'/PHP/includes/functions.php';
-    require_once __DIR__.'/PHP/includes/configs.php';
 
-    // Déterminer le type de QR code à générer
+    // Importer les fichiers nécessaires
+    require_once __DIR__.'/PHP/includes/imports.php';    // Contient les imports de librairies
+    require_once __DIR__.'/PHP/includes/functions.php';  // Contient les fonctions utilitaires
+    require_once __DIR__.'/PHP/includes/configs.php';    // Contient les configurations
+
+    // Déterminer le type de QR code à générer (text ou vcard)
+    // Si aucun type n'est spécifié dans POST, utiliser 'vcard' par défaut
     $qrType = isset($_POST['qrType']) ? $_POST['qrType'] : 'vcard';
-    // Charger le fichier approprié selon le type
+
+    // Charger le fichier de génération approprié selon le type de QR code
     if ($qrType === 'text') {
+        // Si c'est un QR code de type texte, charger le générateur de texte
         require_once __DIR__.'/PHP/includes/generateText.php';
     } else {
+        // Sinon charger le générateur de vCard
         require_once __DIR__.'/PHP/includes/generatevCard.php';
     }
 ?>
@@ -23,6 +30,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <link rel="shortcut icon" href="https://placehold.co/96x96/FFFFFF/<?php echo str_replace('#','',$color1); ?>?text=QR"/png" type="image/x-icon">
+    <link rel="favicon" href="https://placehold.co/96x96/FFFFFF/<?php echo str_replace('#','',$color1); ?>?text=QR"/png" type="image/x-icon">
     <style>
         body {
             background: linear-gradient(<?php echo mt_rand(0,360); ?>deg, <?php echo $color1; ?>, <?php echo $color2; ?>);
@@ -477,7 +485,7 @@
                                         <label class="form-label">Taille</label>
                                         <select name="size" class="form-select">
                                             <?php for($i=1;$i<=10;$i++): ?>
-                                                <option <?php echo $i==5? "selected" : "";?> value="<?php echo $i ?>"><?php echo $i ?></option>
+                                                <option <?php echo $i==10? "selected" : "";?> value="<?php echo $i ?>"><?php echo $i ?></option>
                                             <?php endfor; ?>
                                         </select>
                                     </div>
@@ -525,7 +533,7 @@
                                     <label class="form-label">Taille</label>
                                     <select name="size" class="form-select">
                                         <?php for($i=1;$i<=10;$i++): ?>
-                                            <option <?php echo $i==5? "selected" : "";?> value="<?php echo $i ?>"><?php echo $i ?></option>
+                                            <option <?php echo $i==10? "selected" : "";?> value="<?php echo $i ?>"><?php echo $i ?></option>
                                         <?php endfor; ?>
                                     </select>
                                 </div>
@@ -543,7 +551,7 @@
                 <?php if(isset($filename) && file_exists($filename)): ?>
                     <div class="qr-preview">
                         <h4 class="mb-3">Votre QR Code</h4>
-                        <img src="<?php echo $File_WEB_DIR.basename($filename); ?>" class="img-fluid rounded" alt="QR Code généré">
+                        <img src="<?php echo isset($filenameDisplay) && file_exists($filenameDisplay)? $File_WEB_DIR.basename($filenameDisplay):"https://placehold.co/500x500/FFFFFF/".str_replace('#','',$color1)."?text=QR"; ?>" class="img-fluid rounded" alt="QR Code généré">
                         <div class="mt-3">
                             <a href="download.php?file=<?php echo basename($filename); ?>" class="btn btn-warning btn-lg">
                                 Télécharger le QR Code
