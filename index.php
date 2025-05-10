@@ -528,6 +528,7 @@
 
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-warning btn-lg px-5">Générer le QR Code</button>
+                            <input type="reset" class="btn btn-danger btn-lg px-5" value="Effacer"/>
                         </div>
                     </form>
                 </div>
@@ -575,6 +576,7 @@
 
                         <div class="text-center mt-4">
                             <button type="submit" class="btn btn-warning btn-lg px-5">Générer le QR Code</button>
+                            <input type="reset" class="btn btn-danger btn-lg px-5" value="Effacer"/>
                         </div>
                     </form>
                 </div>
